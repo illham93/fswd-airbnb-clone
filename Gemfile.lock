@@ -261,6 +261,7 @@ GEM
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
     sqlite3 (1.4.2)
+    stripe (12.5.0)
     strscan (3.0.4)
     thor (1.2.1)
     tilt (2.0.10)
@@ -312,6 +313,7 @@ DEPENDENCIES
   spring (< 3.0)
   spring-watcher-listen (~> 2.0.1)
   sqlite3 (~> 1.4)
+  stripe
   web-console (>= 4.2)
   webpacker (~> 5.0)
   webrick (~> 1.7)
