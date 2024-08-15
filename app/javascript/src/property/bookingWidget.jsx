@@ -24,6 +24,8 @@ class BookingWidget extends React.Component {
                     authenticated: data.authenticated,
                 })
             })
+
+        this.getPropertyBookings();
     }
 
     getPropertyBookings = () => {
