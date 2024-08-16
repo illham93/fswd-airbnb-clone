@@ -3,7 +3,7 @@
   "private": true,
   "engines": {
     "node": "16.17",
-    "yarn": ">=1.x"
+    "yarn": "1.x"
   },
   "dependencies": {
     "@babel/preset-react": "^7.16.7",
