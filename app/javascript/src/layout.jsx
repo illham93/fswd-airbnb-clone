@@ -1,6 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Layout = (props) => {
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [authenticityToken, setAuthenticityToken] = useState('');
+
+    useEffect(() => {
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        setAuthenticityToken(token);
+
+        fetch('/api/authenticated', {
+            method: 'GET',
+            headers: {
+                'X-CSRF-Token': token,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.authenticated) {
+                    setLoggedIn(true);
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching authentication status:", error);
+            });
+    }, []);
+
     return (
         <React.Fragment>
             <nav className='navbar navbar-expand navbar-light bg-light'>
@@ -10,6 +35,22 @@ const Layout = (props) => {
                         <ul className='navbar-nav me-auto'>
                             <li className='nav-item'>
                                 <a className='nav-link' href='/'>Home</a>
+                            </li>
+                            <li className='nav-item'>
+                                <a className='nav-link'>My Properties</a>
+                            </li>
+                        </ul>
+                        <ul className='navbar-nav ms-auto'>
+                            <li className='nav-item'>
+                                {loggedIn ? (
+                                    <form action='/api/logout' method='post'>
+                                        <input type='hidden' name='_method' value='delete' />
+                                        <input type='hidden' name='authenticity_token' value={authenticityToken} />
+                                        <button type='submit' className='nav-link btn btn-link' style={{textDecoration: 'none'}}>Log Out</button>
+                                    </form>
+                                ) : (
+                                    <a className='nav-link' href='/login'>Log In</a>
+                                )}
                             </li>
                         </ul>
                     </div>

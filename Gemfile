@@ -5,6 +5,8 @@ ruby '3.1.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.1.6.1'
+
+gem 'react-rails'
 # Use Puma as the app server
 gem 'puma', '>= 5.6.4'
 # Use SCSS for stylesheets
