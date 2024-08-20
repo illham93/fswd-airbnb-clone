@@ -37,7 +37,7 @@ const Layout = (props) => {
                                 <a className='nav-link' href='/'>Home</a>
                             </li>
                             <li className='nav-item'>
-                                <a className='nav-link'>My Properties</a>
+                                <a className='nav-link' href='/user_properties'>My Properties</a>
                             </li>
                         </ul>
                         <ul className='navbar-nav ms-auto'>

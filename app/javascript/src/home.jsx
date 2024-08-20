@@ -16,7 +16,9 @@ class Home extends React.Component {
   }
 
   componentDidMount() {
-    fetch('/api/properties?page=1')
+    const apiEndpoint = this.props.userProperties ? '/api/user_properties' : '/api/properties?page=1'
+
+    fetch(apiEndpoint)
       .then(handleErrors)
       .then(data => {
         this.setState({
@@ -33,7 +35,9 @@ class Home extends React.Component {
       return;
     }
     this.setState({ loading: true });
-    fetch(`/api/properties?page=${this.state.next_page}`)
+    const apiEndpoint = this.props.userProperties ? `/api/user_properties?page=${this.state.next_page}` : `/api/properties?page=${this.state.next_page}`;
+
+    fetch(apiEndpoint)
       .then(handleErrors)
       .then(data => {
         this.setState({
@@ -50,8 +54,8 @@ class Home extends React.Component {
     return (
       <Layout>
         <div className='container pt-4'>
-          <h4 className='mb-1'>Top-rated places to stay</h4>
-          <p className='text-secondary mb-3'>Explore some of the best-reviews stays in the world</p>
+          <h4 className='mb-1'>{this.props.userProperties ? 'Your Properties' : 'Top-rated places to stay'}</h4>
+          <p className='text-secondary mb-3'>{this.props.userProperties ? 'Here are the properties you have listed' : 'Explore some of the best-reviews stays in the world'}</p>
           <div className='row'>
             {properties.map(property => {
               return (
@@ -79,8 +83,10 @@ class Home extends React.Component {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const userProperties = document.body.getAttribute('data-user-properties') === 'true';
+
   ReactDOM.render(
-    <Home />,
+    <Home userProperties={userProperties} />,
     document.body.appendChild(document.createElement('div')),
   )
 })
