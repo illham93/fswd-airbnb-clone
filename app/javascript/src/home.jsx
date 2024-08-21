@@ -66,6 +66,7 @@ class Home extends React.Component {
                     <h6 className='mb-0'>{property.title}</h6>
                     <p className='mb-0'><small>${property.price_per_night} USD/night</small></p>
                   </a>
+                  {this.props.userProperties && <a className='mt-2 btn btn-outline-danger text-decoration-none' href={`/edit_property/${property.id}`}>Edit ✏️</a>}
                 </div>
               )
             })}

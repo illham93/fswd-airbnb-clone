@@ -1,5 +1,5 @@
 class StaticPagesController < ApplicationController
-  before_action :authenticate_api_user, only: [:user_properties]
+  before_action :authenticate_api_user, only: [:user_properties, :edit_property]
   def home
     render 'home'
   end
@@ -20,6 +20,17 @@ class StaticPagesController < ApplicationController
     else
       redirect_to login_path, alert: 'You need to log in to view your properties.'
     end
+  end
+
+  def edit_property
+    @property = Property.find(params[:id])
+
+    unless @property.user == current_user
+      redirect_to root_path, alert: 'You are not authorized to edit this property.' and return
+    end
+
+    @data = { property_id: params[:id] }.to_json
+    render 'edit_property'
   end
 
   private
