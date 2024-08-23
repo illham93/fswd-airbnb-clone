@@ -1,6 +1,6 @@
 import React from "react";
 import Layout from '@src/layout';
-import {handleErrors} from '@utils/fetchHelper';
+import {safeCredentials, handleErrors} from '@utils/fetchHelper';
 
 import './editProperty.scss'
 
@@ -19,6 +19,51 @@ class EditProperty extends React.Component {
                     loading: false,
                 })
             })
+    }
+
+    handleSubmit = (event) => {
+        event.preventDefault();
+
+        const form = new FormData(event.target);
+        const data = {
+            title: form.get('title'),
+            city: form.get('city'),
+            property_type: form.get('property_type'),
+            max_guests: form.get('max_guests'),
+            bedrooms: form.get('bedrooms'),
+            beds: form.get('beds'),
+            baths: form.get('baths'),
+            description: form.get('description'),
+        };
+
+            fetch(`/api/properties/${this.props.property_id}`, safeCredentials({
+                method: 'PUT',
+                body: JSON.stringify({ property: data }),
+            }))
+                .then(handleErrors)
+                .then(response => {
+                    window.location.href = '/user_properties';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+    }; 
+
+    handleDelete = (event) => {
+        event.preventDefault();
+
+        if (confirm('Are you sure you want to delete this property?')) {
+            fetch(`/api/properties/${this.props.property_id}`, safeCredentials({
+                method: 'DELETE',
+            }))
+                .then(handleErrors)
+                .then(response => {
+                    window.location.href = '/user_properties';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
     }
 
     render () {
@@ -50,21 +95,48 @@ class EditProperty extends React.Component {
                     <div className="row">
                         <div className="info col-12 col-lg-8">
                             <div className="mb-3">
-                                <h3 className="mb-0">{title}</h3>
-                                <p className="text-uppercase mb-0 text-secondary"><small>{city}</small></p>
-                                <p className="mb-0"><small>Hosted by <b>{user.username}</b></small></p>
+                                <form id="property-info" onSubmit={this.handleSubmit}>
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td>Title: </td>
+                                                <td><input className="form-control" defaultValue={title} name="title" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>City: </td>
+                                                <td><input className="form-control" defaultValue={city} name="city" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Property type: </td>
+                                                <td><input className="form-control" defaultValue={property_type} name="property_type" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Max guests: </td>
+                                                <td><input className="form-control" defaultValue={max_guests} name="max_guests" type="number" min="0" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Bedrooms: </td>
+                                                <td><input className="form-control" defaultValue={bedrooms} name="bedrooms" type="number" min="0" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Beds: </td>
+                                                <td><input className="form-control" defaultValue={beds} name="beds" type="number" min="0" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Baths: </td>
+                                                <td><input className="form-control" defaultValue={baths} name="baths" type="number" min="0" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Description: </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <textarea className="form-control mt-2 mb-2" defaultValue={description} name="description" />
+                                    <button className="btn btn-success mb-2" type="submit">Save ✅</button>
+                                    <br></br>
+                                </form>
+                                <button className="btn btn-danger" type="button" onClick={this.handleDelete}>Delete ❌</button>
                             </div>
-                            <div>
-                                <p className="mb-0 text-capitalize"><b>{property_type}</b></p>
-                                <p>
-                                    <span className="me-3">{max_guests} guests</span>
-                                    <span className="me-3">{bedrooms} bedrooms</span>
-                                    <span className="me-3">{beds} beds</span>
-                                    <span className="me-3">{baths} baths</span>
-                                </p>
-                            </div>
-                            <hr />
-                            <p>{description}</p>
                         </div>
                     </div>
                 </div>
@@ -72,5 +144,6 @@ class EditProperty extends React.Component {
         )
     }
 }
+
 
 export default EditProperty

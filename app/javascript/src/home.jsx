@@ -55,7 +55,13 @@ class Home extends React.Component {
       <Layout>
         <div className='container pt-4'>
           <h4 className='mb-1'>{this.props.userProperties ? 'Your Properties' : 'Top-rated places to stay'}</h4>
-          <p className='text-secondary mb-3'>{this.props.userProperties ? 'Here are the properties you have listed' : 'Explore some of the best-reviews stays in the world'}</p>
+          <p className='text-secondary mb-3'>
+            {this.props.userProperties ? 
+              (this.props.userProperties.length > 0 ?
+               'Here are the properties you have listed' : 
+               'You do not currently have any properties listed') : 
+               'Explore some of the best-reviews stays in the world'}
+          </p>
           <div className='row'>
             {properties.map(property => {
               return (
