@@ -18,9 +18,10 @@ Rails.application.routes.draw do
     get '/properties/:id/bookings' => 'bookings#get_property_bookings'
     get '/authenticated' => 'sessions#authenticated'
     get 'user_properties' => 'properties#user_properties'
-    
     delete 'properties/:id' => 'properties#destroy'
     put 'properties/:id' => 'properties#update'
+    put 'properties/:id/upload_image' => 'properties#upload_image'
+    get 'properties/:id/image' => 'properties#image'
 
     # stripe webhook
     post '/charges/mark_complete' => 'charges#mark_complete'

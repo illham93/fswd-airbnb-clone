@@ -14,6 +14,15 @@ module Api
       render 'api/properties/show', status: :ok
     end
 
+    def image
+      @property = Property.find_by(params[:id])
+      if @property.image.attached?
+        render json: {url: url_for(@property.image)}
+      else
+        render json: {error: 'Image not found'}, status: :not_found
+      end
+    end
+
     before_action :authenticate_api_user
 
     def update
@@ -31,6 +40,45 @@ module Api
       end
     end
 
+    # def upload_image
+    #   @property = Property.find(params[:id])
+
+    #   if @property.update(image: params[:image])
+    #     render json: {message: 'Image uploaded successfully', property: @property}, status: :ok
+    #   else
+    #     render json: {errors: @property.errors}, status: :unprocessable_entity
+    #   end
+    # end
+     
+    def upload_image
+      @property = Property.find(params[:id])
+    
+      if @property.update(image: params[:image])
+        # Construct the response with the updated image URL
+        image_url = @property.image.attached? ? rails_blob_url(@property.image, only_path: false) : 'default-image-url'
+        
+        render json: {
+          message: 'Image uploaded successfully',
+          property: {
+            id: @property.id,
+            title: @property.title,
+            description: @property.description,
+            city: @property.city,
+            country: @property.country,
+            property_type: @property.property_type,
+            price_per_night: @property.price_per_night,
+            max_guests: @property.max_guests,
+            bedrooms: @property.bedrooms,
+            beds: @property.beds,
+            baths: @property.baths,
+            image_url: image_url
+          }
+        }, status: :ok
+      else
+        render json: {errors: @property.errors}, status: :unprocessable_entity
+      end
+    end
+    
     def destroy
       @property = Property.find(params[:id])
 
@@ -58,7 +106,7 @@ module Api
     private
 
     def property_params
-      params.require(:property).permit(:title, :description, :city, :country, :property_type, :max_guests, :bedrooms, :beds, :baths, :image_url)
+      params.require(:property).permit(:title, :description, :city, :country, :property_type, :price_per_night, :max_guests, :bedrooms, :beds, :baths)
     end
 
     def authenticate_api_user

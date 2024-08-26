@@ -50,6 +50,7 @@ class Home extends React.Component {
   }
 
   render () {
+
     const { properties, next_page, loading } = this.state;
     return (
       <Layout>
@@ -57,7 +58,7 @@ class Home extends React.Component {
           <h4 className='mb-1'>{this.props.userProperties ? 'Your Properties' : 'Top-rated places to stay'}</h4>
           <p className='text-secondary mb-3'>
             {this.props.userProperties ? 
-              (this.props.userProperties.length > 0 ?
+              (this.state.properties.length > 0 ?
                'Here are the properties you have listed' : 
                'You do not currently have any properties listed') : 
                'Explore some of the best-reviews stays in the world'}

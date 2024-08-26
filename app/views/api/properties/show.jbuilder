@@ -10,7 +10,12 @@ json.property do
   json.bedrooms @property.bedrooms
   json.beds @property.beds
   json.baths @property.baths
-  json.image_url @property.image_url
+  
+  if @property.image.attached?
+    json.image_url rails_blob_url(@property.image, only_path: false)
+  else
+    json.image_url 'default-image-url'
+  end
 
   json.user do
     json.id @property.user.id
