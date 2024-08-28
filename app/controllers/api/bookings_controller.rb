@@ -1,5 +1,24 @@
 module Api
   class BookingsController < ApplicationController
+
+    before_action :authenticate_api_user, only: [:index]
+    def index
+      @bookings = current_user.bookings.includes(:property)
+      render json: @bookings.as_json(
+        include: {
+          property: {
+            only: [
+              :id,
+              :title,
+              :city,
+              :country,
+              :price_per_night
+            ]
+          }
+        }
+      )
+    end
+    
     def create
       token = cookies.signed[:airbnb_session_token]
       session = Session.find_by(token: token)
@@ -30,6 +49,18 @@ module Api
     end
 
     private
+
+    def authenticate_api_user
+      token = cookies.signed[:airbnb_session_token]
+      session = Session.find_by(token: token)
+  
+      if session
+        @user = session.user
+        @authenticated = true
+      else
+        @authenticated = false
+      end
+    end
 
     def booking_params
       params.require(:bookoing).permit(:property_id, :start_date, :end_date)

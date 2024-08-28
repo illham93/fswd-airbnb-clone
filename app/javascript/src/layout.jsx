@@ -39,6 +39,9 @@ const Layout = (props) => {
                             <li className='nav-item'>
                                 <a className='nav-link' href='/user_properties'>My Properties</a>
                             </li>
+                            <li className='nav-item'>
+                                <a className='nav-link' href='/trips'>Trips</a>
+                            </li>
                         </ul>
                         <ul className='navbar-nav ms-auto'>
                             <li className='nav-item'>
