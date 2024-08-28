@@ -1,5 +1,5 @@
 class StaticPagesController < ApplicationController
-  before_action :authenticate_api_user, only: [:user_properties, :edit_property]
+  before_action :authenticate_api_user, only: [:user_properties, :edit_property, :add_property]
   def home
     render 'home'
   end
@@ -31,6 +31,14 @@ class StaticPagesController < ApplicationController
 
     @data = { property_id: params[:id] }.to_json
     render 'edit_property'
+  end
+
+  def add_property
+    if @authenticated
+      render 'add_property'
+    else
+      redirect_to login_path, alert: 'You need to log in to add a property.'
+    end
   end
 
   private

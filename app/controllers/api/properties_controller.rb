@@ -40,16 +40,23 @@ module Api
       end
     end
 
-    # def upload_image
-    #   @property = Property.find(params[:id])
+    def create
+      if @authenticated
+        @property = @user.properties.new(property_params)
 
-    #   if @property.update(image: params[:image])
-    #     render json: {message: 'Image uploaded successfully', property: @property}, status: :ok
-    #   else
-    #     render json: {errors: @property.errors}, status: :unprocessable_entity
-    #   end
-    # end
-     
+        if @property.save
+          if params[:image].present?
+            @property.image.attach(params[:image])
+          end
+          render json: { message: 'Property created successfully', property: @property }, status: :created
+        else
+          render json: { errors: @property.errors.full_messages }, status: :unprocessable_entity
+        end
+      else
+        render json: {error: 'Not authorized'}, status: :unauthorized
+      end
+    end
+
     def upload_image
       @property = Property.find(params[:id])
     

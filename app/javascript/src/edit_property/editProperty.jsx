@@ -41,6 +41,7 @@ class EditProperty extends React.Component {
             title: form.get('title'),
             city: form.get('city'),
             property_type: form.get('property_type'),
+            price_per_night: form.get('price_per_night'),
             max_guests: form.get('max_guests'),
             bedrooms: form.get('bedrooms'),
             beds: form.get('beds'),
@@ -48,17 +49,17 @@ class EditProperty extends React.Component {
             description: form.get('description'),
         };
 
-            fetch(`/api/properties/${this.props.property_id}`, safeCredentials({
-                method: 'PUT',
-                body: JSON.stringify({ property: data }),
-            }))
-                .then(handleErrors)
-                .then(() => {
-                    window.location.href = '/user_properties';
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+        fetch(`/api/properties/${this.props.property_id}`, safeCredentials({
+            method: 'PUT',
+            body: JSON.stringify({ property: data }),
+        }))
+            .then(handleErrors)
+            .then(() => {
+                window.location.href = '/user_properties';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     }; 
 
     handleDelete = (event) => {
@@ -154,6 +155,10 @@ class EditProperty extends React.Component {
                                             <tr>
                                                 <td>Property type: </td>
                                                 <td><input className="form-control" defaultValue={property_type} name="property_type" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Price per night: $</td>
+                                                <td><input className="form-control" defaultValue={price_per_night} name="price_per_night" type="number" min="0" /></td>
                                             </tr>
                                             <tr>
                                                 <td>Max guests: </td>

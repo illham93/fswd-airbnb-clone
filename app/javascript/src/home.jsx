@@ -56,6 +56,7 @@ class Home extends React.Component {
       <Layout>
         <div className='container pt-4'>
           <h4 className='mb-1'>{this.props.userProperties ? 'Your Properties' : 'Top-rated places to stay'}</h4>
+          {this.props.userProperties && <a className='text-decoration-none' href='/add_property'><button className='btn btn-outline-primary mt-2 mb-2'>Add New Property</button></a>}
           <p className='text-secondary mb-3'>
             {this.props.userProperties ? 
               (this.state.properties.length > 0 ?
