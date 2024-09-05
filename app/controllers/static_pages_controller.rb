@@ -49,6 +49,16 @@ class StaticPagesController < ApplicationController
     end
   end
 
+  def booking_confirmation
+      property_id = params[:id]
+      if property_id.present?
+        @data = { property_id: params[:id] }.to_json
+      else
+        @data = {}.to_json
+      end
+      render 'booking_confirmation'
+  end
+
   private
 
   def authenticate_api_user

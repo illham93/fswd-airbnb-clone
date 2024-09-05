@@ -3,15 +3,17 @@ import Layout from '@src/layout';
 import {handleErrors} from '@utils/fetchHelper';
 
 import BookingWidget from './bookingWidget';
+import BookingConfirmation from "./bookingConfirmation";
 import './property.scss'
 
 class Property extends React.Component {
     state = {
         property: {},
         loading: true,
-    }
+    };
 
     componentDidMount() {
+
         fetch(`/api/properties/${this.props.property_id}`)
             .then(handleErrors)
             .then(data => {
@@ -24,6 +26,8 @@ class Property extends React.Component {
 
     render () {
         const {property, loading} = this.state;
+        const {bookingConfirmation} = this.props;
+
         if (loading) {
             return <p>loading...</p>;
         };
@@ -68,7 +72,11 @@ class Property extends React.Component {
                             <p>{description}</p>
                         </div>
                         <div className="col-12 col-lg-5">
-                            <BookingWidget property_id={id} price_per_night={price_per_night} />
+                            {bookingConfirmation ? (
+                                <BookingConfirmation />
+                            ) : (
+                                <BookingWidget property_id={id} price_per_night={price_per_night} />
+                            )}
                         </div>
                     </div>
                 </div>

@@ -8,42 +8,27 @@ module Api
       session = Session.find_by(token: token)
       return render json: { error: 'user not logged in' }, status: :unauthorized if !session
 
-      booking = Booking.find_by(id: params[:booking_id])
-      return render json: { error: 'cannot find booking' }, status: :not_found if !booking
-
-      property = booking.property
-      days_booked = (booking.end_date - booking.start_date).to_i
-      amount = days_booked * property.price_per_night
+      property = Property.find_by(id: params[:property_id])
+      return render json: {error: 'cannot find property'}, status: :not_found if !property
 
       session = Stripe::Checkout::Session.create(
         payment_method_types: ['card'],
         line_items: [{
           price_data: {
             currency: 'usd',
-            unit_amount: (amount * 100.0).to_i, # amount in cents
+            unit_amount: (property.price_per_night * 100.0).to_i, # amount in cents
             product_data: {
               name: "Trip for #{property.title}",
-              description: "Your booking is for #{booking.start_date} to #{booking.end_date}."
             }
           },
-          quantity: 1,
+          quantity: (Date.parse(params[:end_date]) - Date.parse(params[:start_date])).to_i,
         }],
         mode: 'payment',
-        success_url: "#{ENV['URL']}/booking/#{booking.id}/success",
+        success_url: "#{request.base_url}/booking_confirmation/#{property.id}?property_id=#{property.id}&start_date=#{params[:start_date]}&end_date=#{params[:end_date]}&session_id={CHECKOUT_SESSION_ID}",
+
         cancel_url: "#{ENV['URL']}#{params[:cancel_url]}"
       )
-
-      @charge = booking.charges.new({
-        checkout_session_id: session.id,
-        currency: 'usd',
-        amount: amount
-      })
-
-      if @charge.save
-        render 'api/charges/create', status: :created
-      else
-        render json: { error: 'charge could not be created' }, status: :bad_request
-      end
+      render json: {charge: {checkout_session_id: session.id}}
     end
 
     def mark_complete

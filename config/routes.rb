@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   get '/edit_property/:id' => 'static_pages#edit_property'
   get '/add_property' => 'static_pages#add_property'
   get '/trips' => 'static_pages#trips'
+  get '/booking_confirmation/:id', to: 'static_pages#booking_confirmation'
 
   namespace :api do
     # Add routes below this line
@@ -28,6 +29,7 @@ Rails.application.routes.draw do
 
     # trips
     get 'trips' => 'bookings#index'
+    delete 'bookings/:id' => 'bookings#destroy'
 
     # stripe webhook
     post '/charges/mark_complete' => 'charges#mark_complete'
