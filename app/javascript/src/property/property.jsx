@@ -73,7 +73,7 @@ class Property extends React.Component {
                         </div>
                         <div className="col-12 col-lg-5">
                             {bookingConfirmation ? (
-                                <BookingConfirmation />
+                                <BookingConfirmation price_per_night={price_per_night}/>
                             ) : (
                                 <BookingWidget property_id={id} price_per_night={price_per_night} />
                             )}

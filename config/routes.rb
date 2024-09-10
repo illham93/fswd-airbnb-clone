@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     put 'properties/:id/upload_image' => 'properties#upload_image'
     get 'properties/:id/image' => 'properties#image'
     post 'add_property' => 'properties#create'
+    get 'bookings/check' => 'bookings#check'
 
     # trips
     get 'trips' => 'bookings#index'

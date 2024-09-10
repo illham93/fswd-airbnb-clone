@@ -1,7 +1,7 @@
 class Booking < ApplicationRecord
   belongs_to :user
   belongs_to :property
-  has_many :charges
+  belongs_to :charge
 
   validates :start_date, presence: true
   validates :end_date, presence: true
@@ -17,7 +17,7 @@ class Booking < ApplicationRecord
 
   def check_start_date_smaller_than_end_date
     if self.start_date > self.end_date
-      raise ArgumentError.new('start date cannot be larger than end date')
+      errors.add(:start_date, 'cannot be after end date')
     end
   end
 
@@ -33,7 +33,7 @@ class Booking < ApplicationRecord
                         .where(cancelled: false)
 
     if overlapped_bookings.count > 0 || exact_booking.count > 0
-      raise ArgumentError.new('date range overlaps with other bookings')
+      errors.add(:base, 'Date range overlaps with other bookings')
     end
   end
 end

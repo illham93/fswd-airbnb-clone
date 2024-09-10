@@ -14,6 +14,7 @@ class BookingWidget extends React.Component {
         endDate: null,
         focusedInput: null,
         existingBookings: [],
+        totalAmount: null,
     }
 
     componentDidMount() {
@@ -40,11 +41,11 @@ class BookingWidget extends React.Component {
     }
 
     initiateStripeCheckout = () => {
-        const {startDate, endDate} = this.state;
+        const {startDate, endDate, totalAmount} = this.state;
         const {property_id} = this.props;
 
         return new Promise((resolve, reject) => {
-            fetch(`/api/charges?property_id=${property_id}&start_date=${startDate.format('MMM DD YYYY')}&end_date=${endDate.format('MMM DD YYYY')}&cancel_url=${window.location.pathname}`, safeCredentials({
+            fetch(`/api/charges?property_id=${property_id}&start_date=${startDate.format('YYYY-MM-DD')}&end_date=${endDate.format('YYYY-MM-DD')}&cancel_url=${window.location.pathname}&amount=${totalAmount}`, safeCredentials({
                 method: 'POST',
             }))
                 .then(handleErrors)
@@ -76,7 +77,6 @@ class BookingWidget extends React.Component {
     submitBooking = (e) => {
         if (e) { e.preventDefault(); }
         const {startDate, endDate} = this.state;
-        console.log(startDate.format('MMM DD YYYY'), endDate.format('MMM DD YYYY'));
 
         this.initiateStripeCheckout()
             .then(paymentSuccess => {
@@ -91,7 +91,20 @@ class BookingWidget extends React.Component {
             })
     }
 
-    onDatesChange = ({startDate, endDate}) => this.setState({startDate, endDate})
+    onDatesChange = ({ startDate, endDate }) => {
+        this.setState({ startDate, endDate }, this.calculateTotalAmount);
+    }
+
+    calculateTotalAmount = () => {
+        const { startDate, endDate } = this.state;
+        const { price_per_night } = this.props;
+    
+        if (startDate && endDate) {
+          const days = endDate.diff(startDate, 'days');
+          const totalAmount = (price_per_night * days * 100).toFixed(2); // total amount in cents
+          this.setState({ totalAmount });
+        }
+    }
 
     onFocusChange = (focusedInput) => this.setState({focusedInput})
 

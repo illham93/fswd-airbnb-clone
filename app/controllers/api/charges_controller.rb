@@ -7,16 +7,22 @@ module Api
       token = cookies.signed[:airbnb_session_token]
       session = Session.find_by(token: token)
       return render json: { error: 'user not logged in' }, status: :unauthorized if !session
-
+    
       property = Property.find_by(id: params[:property_id])
-      return render json: {error: 'cannot find property'}, status: :not_found if !property
+      return render json: { error: 'cannot find property' }, status: :not_found if !property
 
-      session = Stripe::Checkout::Session.create(
+      amount = params[:amount].to_i
+      property_id = params[:property_id]
+      start_date = params[:start_date]
+      end_date = params[:end_date]
+    
+      # Create the Stripe session
+      stripe_session = Stripe::Checkout::Session.create(
         payment_method_types: ['card'],
         line_items: [{
           price_data: {
             currency: 'usd',
-            unit_amount: (property.price_per_night * 100.0).to_i, # amount in cents
+            unit_amount: amount, # amount in cents
             product_data: {
               name: "Trip for #{property.title}",
             }
@@ -25,11 +31,29 @@ module Api
         }],
         mode: 'payment',
         success_url: "#{request.base_url}/booking_confirmation/#{property.id}?property_id=#{property.id}&start_date=#{params[:start_date]}&end_date=#{params[:end_date]}&session_id={CHECKOUT_SESSION_ID}",
-
         cancel_url: "#{ENV['URL']}#{params[:cancel_url]}"
       )
-      render json: {charge: {checkout_session_id: session.id}}
+    
+      # Create a new charge in the database
+      @charge = Charge.new({
+        checkout_session_id: stripe_session.id,
+        currency: 'usd',
+        amount: amount,
+        property_id: property_id,
+        start_date: start_date,
+        end_date: end_date
+      })
+      
+      if @charge.save
+        render 'api/charges/create', status: :created
+      else
+        render json: { error: 'charge could not be created' }, status: :bad_request
+      end
+
+      # Return the Stripe session id for redirecting to checkout
+      # render json: { charge: { checkout_session_id: stripe_session.id } }
     end
+    
 
     def mark_complete
       # You can find your endpoint's secret in your webhook settings
