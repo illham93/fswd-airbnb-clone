@@ -1,5 +1,5 @@
 class StaticPagesController < ApplicationController
-  before_action :authenticate_api_user, only: [:user_properties, :edit_property, :add_property, :trips]
+  before_action :authenticate_api_user, only: [:user_properties, :edit_property, :add_property, :trips, :view_property_bookings]
   def home
     render 'home'
   end
@@ -57,6 +57,17 @@ class StaticPagesController < ApplicationController
         @data = {}.to_json
       end
       render 'booking_confirmation'
+  end
+
+  def view_property_bookings
+    @property = Property.find(params[:id])
+
+    unless @property.user == current_user
+      redirect_to root_path, alert: 'You are not authorized to view this property bookings.' and return
+    end
+
+    @data = { property_id: params[:id] }.to_json
+    render 'property_bookings'
   end
 
   private
