@@ -31,6 +31,7 @@ class PropertyBookings extends React.Component {
                 this.setState({
                     bookings: data.bookings,
                 })
+                console.log(this.state.bookings.start_date);
             })
     }
 
@@ -42,44 +43,28 @@ class PropertyBookings extends React.Component {
             return <p>loading...</p>;
         };
 
-        const {
-            id,
-            title,
-            description,
-            city,
-            country,
-            property_type,
-            price_per_night,
-            max_guests,
-            bedrooms,
-            beds,
-            baths,
-            image_url,
-            user,
-        } = property;
-
         return (
             <Layout>
-                <div className="property-image mb-3" style={{ backgroundImage: `url(${image_url})`}} />
+                <div className="property-image mb-3" style={{ backgroundImage: `url(${property.image_url})`}} />
                 <div className="container">
                     <div className="row">
                         <div className="info col-12 col-lg-8">
                             <div className="mb-3">
-                                <h3 className="mb-0">{title}</h3>
-                                <p className="text-uppercase mb-0 text-secondary"><small>{city}</small></p>
-                                <p className="mb-0"><small>Hosted by <b>{user.username}</b></small></p>
+                                <h3 className="mb-0">{property.title}</h3>
+                                <p className="text-uppercase mb-0 text-secondary"><small>{property.city}</small></p>
+                                <p className="mb-0"><small>Hosted by <b>{property.user.username}</b></small></p>
                             </div>
                             <div>
-                                <p className="mb-0 text-capitalize"><b>{property_type}</b></p>
+                                <p className="mb-0 text-capitalize"><b>{property.property_type}</b></p>
                                 <p>
-                                    <span className="me-3">{max_guests} guests</span>
-                                    <span className="me-3">{bedrooms} bedrooms</span>
-                                    <span className="me-3">{beds} beds</span>
-                                    <span className="me-3">{baths} baths</span>
+                                    <span className="me-3">{property.max_guests} guests</span>
+                                    <span className="me-3">{property.bedrooms} bedrooms</span>
+                                    <span className="me-3">{property.beds} beds</span>
+                                    <span className="me-3">{property.baths} baths</span>
                                 </p>
                             </div>
                             <hr />
-                            <p>{description}</p>
+                            <p>{property.description}</p>
                         </div>
                     </div>
                     <h4 className="mb-4">
@@ -88,11 +73,18 @@ class PropertyBookings extends React.Component {
                         'There are no trips booked for this property'}
                     </h4>
                     {bookings.map(booking => {
+                        var days = (new Date(booking.end_date) - new Date(booking.start_date)) / 1000 / 60 / 60 / 24
                         return (
-                            <div className="booked-trip rounded mb-4 p-3" key={booking.id}>
-                                <p><strong>Username:</strong></p>
-                                <p><strong>Check-in Date:</strong></p>
-                                <p><strong>Check-out Date:</strong></p>
+                            <div className="booked-trip card shadow-sm rounded mb-4 p-3" key={booking.id}>
+                                <div className="card-body">
+                                    <h5 className="card-title">Booking Details</h5>
+                                    <ul className="list-group list-group-flush">
+                                        <li className="list-group-item">Username: <strong>{booking.user.username} </strong></li>
+                                        <li className="list-group-item">Check-in Date: <strong>{booking.start_date}</strong></li>
+                                        <li className="list-group-item">Check-out Date: <strong>{booking.end_date}</strong></li>
+                                        <li className="list-group-item">Number of days: <strong>{days}</strong></li>
+                                    </ul> 
+                                </div>
                             </div>
                         )
                     })}
