@@ -31,7 +31,6 @@ class PropertyBookings extends React.Component {
                 this.setState({
                     bookings: data.bookings,
                 })
-                console.log(this.state.bookings.start_date);
             })
     }
 
@@ -75,7 +74,7 @@ class PropertyBookings extends React.Component {
                     {bookings.map(booking => {
                         var days = (new Date(booking.end_date) - new Date(booking.start_date)) / 1000 / 60 / 60 / 24
                         return (
-                            <div className="booked-trip card shadow-sm rounded mb-4 p-3" key={booking.id}>
+                            <div className="booked-trip card rounded mb-4 p-3" key={booking.id}>
                                 <div className="card-body">
                                     <h5 className="card-title">Booking Details</h5>
                                     <ul className="list-group list-group-flush">
