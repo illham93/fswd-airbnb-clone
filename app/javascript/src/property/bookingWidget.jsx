@@ -2,6 +2,7 @@ import React from "react";
 import 'react-dates/initialize';
 import { DateRangePicker } from "react-dates";
 import { safeCredentials, handleErrors } from '@utils/fetchHelper';
+import moment from 'moment';
 
 import 'react-dates/lib/css/_datepicker.css';
 
@@ -108,7 +109,42 @@ class BookingWidget extends React.Component {
 
     onFocusChange = (focusedInput) => this.setState({focusedInput})
 
-    isDayBlocked = day => this.state.existingBookings.filter(b => day.isBetween(b.start_date, b.end_date, 'day', '[)')).length > 0
+    isDayBlocked = day => {
+        const { startDate, existingBookings } = this.state;
+    
+        // if a start date is selected
+        if (startDate) {
+            // block all days before the starting date
+            if (day.isBefore(startDate, 'day')) {
+                return true;
+            }
+            // search for the next booking after the start date
+            const nextBooking = existingBookings.find(booking => {
+                const bookingStart = moment(booking.start_date);
+                return bookingStart.isAfter(startDate, 'day');
+            });
+            // if there is one, unblock its starting date, and block every date after that
+            if (nextBooking) {
+                const nextBookingStart = moment(nextBooking.start_date);
+                if (day.isSame(nextBookingStart, 'day')) {
+                    return false;
+                } else if (day.isAfter(nextBookingStart, 'day')) {
+                    return true;
+                }
+            }
+        } else {
+            // Filter the bookings to find if the day falls within any booking's range
+            const isBlocked = existingBookings.some(booking => 
+                day.isBetween(booking.start_date, booking.end_date, 'day', '[)')
+            );
+
+            if (isBlocked) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 
     render () {
         const {authenticated, startDate, endDate, focusedInput} = this.state;

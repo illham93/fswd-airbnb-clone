@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 const Layout = (props) => {
     const [loggedIn, setLoggedIn] = useState(false);
     const [authenticityToken, setAuthenticityToken] = useState('');
+    const [username, setUsername] = useState(null);
 
     useEffect(() => {
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -19,6 +20,7 @@ const Layout = (props) => {
             .then(data => {
                 if (data.authenticated) {
                     setLoggedIn(true);
+                    setUsername(data.username);
                 }
             })
             .catch(error => {
@@ -44,17 +46,24 @@ const Layout = (props) => {
                             </li>
                         </ul>
                         <ul className='navbar-nav ms-auto'>
-                            <li className='nav-item'>
                                 {loggedIn ? (
-                                    <form action='/api/logout' method='post'>
-                                        <input type='hidden' name='_method' value='delete' />
-                                        <input type='hidden' name='authenticity_token' value={authenticityToken} />
-                                        <button type='submit' className='nav-link btn btn-link' style={{textDecoration: 'none'}}>Log Out</button>
-                                    </form>
+                                    <>
+                                        <li className='nav-item'>
+                                            <span className='navbar-brand nav-link text-danger'>{username}</span>
+                                        </li>
+                                        <li className='nav-item'>
+                                            <form action='/api/logout' method='post'>
+                                                <input type='hidden' name='_method' value='delete' />
+                                                <input type='hidden' name='authenticity_token' value={authenticityToken} />
+                                                <button type='submit' className='nav-link btn btn-link' style={{textDecoration: 'none'}}>Log Out</button>
+                                            </form>
+                                        </li>
+                                    </>
                                 ) : (
-                                    <a className='nav-link' href='/login'>Log In</a>
+                                    <li className='nav-item'>
+                                        <a className='nav-link' href='/login'>Log In</a>
+                                    </li>
                                 )}
-                            </li>
                         </ul>
                     </div>
                 </div>
