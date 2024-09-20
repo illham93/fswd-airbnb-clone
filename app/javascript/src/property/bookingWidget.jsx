@@ -104,6 +104,7 @@ class BookingWidget extends React.Component {
           const days = endDate.diff(startDate, 'days');
           const totalAmount = (price_per_night * days * 100).toFixed(2); // total amount in cents
           this.setState({ totalAmount });
+          console.log(totalAmount);
         }
     }
 

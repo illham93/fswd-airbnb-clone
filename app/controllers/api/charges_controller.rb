@@ -27,7 +27,8 @@ module Api
               name: "Trip for #{property.title}",
             }
           },
-          quantity: (Date.parse(params[:end_date]) - Date.parse(params[:start_date])).to_i,
+          # quantity: (Date.parse(params[:end_date]) - Date.parse(params[:start_date])).to_i,
+          quantity: 1
         }],
         mode: 'payment',
         success_url: "#{request.base_url}/booking_confirmation/#{property.id}?property_id=#{property.id}&start_date=#{params[:start_date]}&end_date=#{params[:end_date]}&session_id={CHECKOUT_SESSION_ID}",
